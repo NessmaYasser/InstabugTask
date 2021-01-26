@@ -14,7 +14,7 @@ class DatabaseHelper(context : Context): SQLiteOpenHelper(context,
 ) {
 
     companion object {
-        private val DATABASE_VERSION = 1
+        private var DATABASE_VERSION = 1
         private val DATABASE_NAME = "wordsDatabase"
         private val TABLE_WORDS = "wordsTable"
 
@@ -59,6 +59,7 @@ class DatabaseHelper(context : Context): SQLiteOpenHelper(context,
 
     fun cachingData(data : List<Word>): Long{
         val db = this.writableDatabase
+        onUpgrade(db, DATABASE_VERSION, DATABASE_VERSION + 1)
         var success : Long = 1
         for(item in data) {
             val contentValues = ContentValues()

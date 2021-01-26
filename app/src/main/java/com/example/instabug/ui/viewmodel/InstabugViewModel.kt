@@ -6,6 +6,7 @@ import com.example.instabug.R
 import com.example.instabug.data.models.ApiResponse
 import com.example.instabug.data.models.Word
 import com.example.instabug.data.repository.InstabugRepository
+import com.example.instabug.utils.convertStringToList
 
 class InstabugViewModel(private val instabugRepository: InstabugRepository) : ViewModel() {
 
@@ -18,32 +19,13 @@ class InstabugViewModel(private val instabugRepository: InstabugRepository) : Vi
             when (it) {
                 is ApiResponse.Success -> {
                     if (it.body.isNotEmpty()) {
-                        var wordsList = it.body.trim()
-                            .replace(".", "")
-                            .replace(",", "")
-                            .replace("\"", "")
-                            .replace("/", "")
-                            .replace(";", "")
-                            .replace("&", "")
-                            .splitToSequence(' ')
-                            .filter { it.isNotEmpty() }
-                            .groupingBy { it }
-                            .eachCount()
-                        var mappedWordsWithCount = mutableListOf<Word>()
-                        for (item in wordsList) {
-                            mappedWordsWithCount.add(
-                                Word(
-                                    item.key,
-                                    item.value
-                                )
-                            )
-                        }
-                        instabugRepository.cachingData(mappedWordsWithCount)
-                        dataList.postValue(mappedWordsWithCount)
+                      var wordsList = convertStringToList(it.body)
+                        instabugRepository.cachingData(wordsList)
+                        dataList.postValue(wordsList)
                     }
                 }
                 is ApiResponse.Error -> {
-                    error.postValue("something went wrong")
+                    error.postValue(it.errorMessage)
                 }
             }
         })

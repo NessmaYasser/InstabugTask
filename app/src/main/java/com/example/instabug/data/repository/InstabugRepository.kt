@@ -11,9 +11,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import java.net.URL
 
-class InstabugRepository(
-    private val dataManager: DataManager
-) {
+class InstabugRepository(private val dataManager: DataManager) {
 
     fun getInstabugWords(callback: (ApiResponse<String>) -> Unit) {
         Thread(Runnable() {
@@ -32,14 +30,25 @@ class InstabugRepository(
 
     }
 
-    fun readCache(callback: (ApiResponse<List<Word>>) -> Unit){
-        try {
-            var data = dataManager.localDataManager.readCache()
-            callback.invoke(ApiResponse.Success(data))
-        }catch (e : Exception){
-            callback.invoke(ApiResponse.Error(e.message))
-        }
+    fun readCache(callback: (ApiResponse<List<Word>>) -> Unit) {
+        Thread(Runnable() {
+            run() {
+                try {
+                    var data = dataManager.localDataManager.readCache()
+                    callback.invoke(ApiResponse.Success(data))
+                } catch (e: Exception) {
+                    callback.invoke(ApiResponse.Error(e.message))
+                }
+            }
+        }).start()
     }
-    fun cachingData(data: List<Word>) = dataManager.localDataManager.cachingData(data)
+
+    fun cachingData(data: List<Word>) {
+        Thread(Runnable() {
+            run() {
+                dataManager.localDataManager.cachingData(data)
+            }
+        })
+    }
 
 }
