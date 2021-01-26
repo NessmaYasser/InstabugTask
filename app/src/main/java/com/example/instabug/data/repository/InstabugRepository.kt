@@ -9,9 +9,13 @@ import com.example.instabug.data.remote.RemoteDataManager
 import kotlinx.android.synthetic.main.activity_instabug.*
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import java.io.BufferedReader
+import java.io.IOException
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
 import java.net.URL
 
-class InstabugRepository(private val dataManager: DataManager) {
+class InstabugRepository(val dataManager: DataManager) {
 
     fun getInstabugWords(callback: (ApiResponse<String>) -> Unit) {
         Thread(Runnable() {
@@ -21,6 +25,8 @@ class InstabugRepository(private val dataManager: DataManager) {
                     val doc: Document = Jsoup.parse(repoListJsonStr, "UTF-8")
                     var doContent = doc.body().text()
                     callback.invoke(ApiResponse.Success(doContent))
+
+
                 }
             } catch (e: Exception) {
                 callback.invoke(ApiResponse.Error(e.message))
@@ -48,7 +54,7 @@ class InstabugRepository(private val dataManager: DataManager) {
             run() {
                 dataManager.localDataManager.cachingData(data)
             }
-        })
+        }).start()
     }
 
 }
