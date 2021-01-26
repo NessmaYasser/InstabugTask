@@ -43,9 +43,11 @@ class InstabugActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.M)
     fun setup() {
 
-        viewModel.getInstabugWords("https://instabug.com/")
-
-
+        if(isNetworkConnected(this)) {
+            viewModel.getInstabugWords()
+        }else{
+            viewModel.getCache()
+        }
         wordsAdapter = WordsAdapter()
         databaseHelper = DatabaseHelper(this)
         wordsRV.apply {
@@ -54,18 +56,41 @@ class InstabugActivity : AppCompatActivity() {
         }
     }
 
-    fun viewModelSetUp(){
-        viewModel = ViewModelProviders.of(this, ViewModelFactory(DataManager(LocalDataManager(
-            DatabaseHelper(this)
-        ), RemoteDataManager(InstabugAPIs())
-        ))).get(InstabugViewModel::class.java)
+    fun viewModelSetUp() {
+        viewModel = ViewModelProviders.of(
+            this, ViewModelFactory(
+                DataManager(
+                    LocalDataManager(
+                        DatabaseHelper(this)
+                    ), RemoteDataManager(InstabugAPIs())
+                )
+            )
+        ).get(InstabugViewModel::class.java)
     }
 
-    fun dataObserving(){
+    fun dataObserving() {
+
         viewModel.dataList.observe(this, Observer {
-            wordsAdapter.setData(it.toMutableList())
-            wordsAdapter.notifyDataSetChanged()
             loaderV.visibility = View.GONE
+            if(it.isNotEmpty()) {
+                wordsAdapter.setData(it.toMutableList())
+                wordsAdapter.notifyDataSetChanged()
+                noDataTV.visibility = View.GONE
+            }else{
+                noDataTV.visibility = View.VISIBLE
+                noDataTV.text = getString(R.string.no_data)
+            }
+        })
+
+        viewModel.error.observe(this, Observer {
+            loaderV.visibility = View.GONE
+            noDataTV.visibility = View.VISIBLE
+            noDataTV.text = getString(R.string.error_message)
+        })
+
+        viewModel.cachingError.observe(this, Observer {
+            noDataTV.visibility = View.VISIBLE
+            noDataTV.text = getString(R.string.error_message)
         })
     }
 }

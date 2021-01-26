@@ -15,24 +15,31 @@ class InstabugRepository(
     private val dataManager: DataManager
 ) {
 
-    fun getInstabugWords(url: String, callback: (ApiResponse<String>) -> Unit) {
+    fun getInstabugWords(callback: (ApiResponse<String>) -> Unit) {
         Thread(Runnable() {
             try {
                 run() {
-                    val repoListJsonStr = dataManager.remoteDataManager.getInstabugWords(url)
+                    val repoListJsonStr = dataManager.remoteDataManager.getInstabugWords()
                     val doc: Document = Jsoup.parse(repoListJsonStr, "UTF-8")
                     var doContent = doc.body().text()
                     callback.invoke(ApiResponse.Success(doContent))
                 }
             } catch (e: Exception) {
-
+                callback.invoke(ApiResponse.Error(e.message))
             }
         }).start()
 
 
     }
 
-    fun readCache() = dataManager.localDataManager.readCache()
+    fun readCache(callback: (ApiResponse<List<Word>>) -> Unit){
+        try {
+            var data = dataManager.localDataManager.readCache()
+            callback.invoke(ApiResponse.Success(data))
+        }catch (e : Exception){
+            callback.invoke(ApiResponse.Error(e.message))
+        }
+    }
     fun cachingData(data: List<Word>) = dataManager.localDataManager.cachingData(data)
 
 }

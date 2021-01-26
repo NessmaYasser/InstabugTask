@@ -4,6 +4,6 @@ import java.net.URL
 
 class InstabugAPIs {
 
-    fun getInstabugWords(url : String) = URL(url).readText()
+    fun getInstabugWords() = URL(ApiUrls.BASE_URL).readText()
 
 }
