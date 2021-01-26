@@ -52,53 +52,6 @@ class InstabugActivity : AppCompatActivity() {
             layoutManager = LinearLayoutManager(this@InstabugActivity)
             adapter = wordsAdapter
         }
-
-//        if (isNetworkConnected(this@InstabugActivity)) {
-//            loaderV.visibility = View.VISIBLE
-//
-//            Thread(Runnable() {
-//
-//                run() {
-//                    val repoListJsonStr = URL("https://instabug.com/").readText()
-//                    val doc: Document = Jsoup.parse(repoListJsonStr, "UTF-8")
-//                    var doContent = doc.body().text()
-//                    var wordsList = doContent.trim()
-//                        .replace(".", "")
-//                        .replace(",", "")
-//                        .replace("\"", "")
-//                        .replace("/", "")
-//                        .replace(";", "")
-//                        .replace("&", "")
-//                        .splitToSequence(' ')
-//                        .filter { it.isNotEmpty() }
-//                        .groupingBy { it }
-//                        .eachCount()
-//                    var mappedWordsWithCount = mutableListOf<Word>()
-//                    for (item in wordsList) {
-//                        mappedWordsWithCount.add(
-//                            Word(
-//                                item.key,
-//                                item.value
-//                            )
-//                        )
-//                    }
-//                    databaseHelper.cachingData(mappedWordsWithCount)
-//
-//                    runOnUiThread {
-//                        wordsAdapter.setData(mappedWordsWithCount)
-//                        wordsAdapter.notifyDataSetChanged()
-//                        loaderV.visibility = View.GONE
-//                    }
-//                }
-//
-//            }).start()
-//
-//        } else {
-//            wordsAdapter.setData(databaseHelper.readCachedData().toMutableList())
-//            wordsAdapter.notifyDataSetChanged()
-//            loaderV.visibility = View.GONE
-//            Toast.makeText(this, "no internet", Toast.LENGTH_SHORT).show()
-//        }
     }
 
     fun viewModelSetUp(){

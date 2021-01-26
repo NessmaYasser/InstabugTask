@@ -17,16 +17,16 @@ class InstabugRepository(
 
     fun getInstabugWords(url: String, callback: (ApiResponse<String>) -> Unit) {
         Thread(Runnable() {
- try{
-            run() {
-                val repoListJsonStr = dataManager.remoteDataManager.getInstabugWords(url)
-                val doc: Document = Jsoup.parse(repoListJsonStr, "UTF-8")
-                var doContent = doc.body().text()
-                callback.invoke(ApiResponse.Success(doContent))
-            }
- }catch(e : ){
+            try {
+                run() {
+                    val repoListJsonStr = dataManager.remoteDataManager.getInstabugWords(url)
+                    val doc: Document = Jsoup.parse(repoListJsonStr, "UTF-8")
+                    var doContent = doc.body().text()
+                    callback.invoke(ApiResponse.Success(doContent))
+                }
+            } catch (e: Exception) {
 
- }
+            }
         }).start()
 
 
